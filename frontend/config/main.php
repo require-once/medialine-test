@@ -41,7 +41,8 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-              'list/<category_id:\d+>' => 'test/get-news'
+              'list/<category_id:\d+>' => 'test/get-news',
+              'list/cats' => 'test/index',
             ],
         ],
 

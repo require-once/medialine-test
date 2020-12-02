@@ -43,13 +43,11 @@ class TestController extends Controller {
     $categories = [];
 
     $roots = Category::find()->roots()->all();
-    // var_dump($roots);
     foreach ($roots as $category) {
       $categories[] = $category;
     }
 
     $leaves = Category::find()->leaves()->all();
-    // var_dump($leaves);
     foreach ($leaves as $leaf) {
       $categories[] = $leaf;
     }
@@ -61,11 +59,13 @@ class TestController extends Controller {
   public function actionGetNews($category_id) {
     $articles = [];
 
-    // echo 'Все новости указанной рубрики:<br/><br/>';
+    // Все новости указанной рубрики
     $cat = Category::findOne($category_id);
-    $articles[] = $cat->list;
+    if (count($cat->list) > 0) {
+      $articles[] = $cat->list;
+    }
 
-    // echo '<br/>Новости вложенных рубрик:<br/>';
+    // Новости вложенных рубрик
     $leaves = $cat->leaves()->all();
 
     foreach ($leaves as $child) {
