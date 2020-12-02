@@ -10,46 +10,59 @@ use yii\web\Response;
 class TestController extends Controller {
   public function actionIndex() {
 /*
-    $categories = new Category(['name' => 'Общество']);
-    $categories->makeRoot();
+    $society = new Category(['name' => 'Общество']);
+    $society->makeRoot();
 
     $cityLife = new Category(['name' => 'городская жизнь']);
-    $cityLife->prependTo($categories);
+    $cityLife->prependTo($society);
 
     $election = new Category(['name' => 'выборы']);
-    $election->appendTo($categories);
+    $election->appendTo($society);
 
 
-    $categories2 = new Category(['name' => 'День города']);
-    $categories2->makeRoot();
+    $dayOfCity = new Category(['name' => 'День города']);
+    $dayOfCity->makeRoot();
 
     $fireworks = new Category(['name' => 'фейерверки']);
-    $fireworks->appendTo($categories2);
+    $fireworks->appendTo($dayOfCity);
 
     $playground = new Category(['name' => 'детская площадка']);
-    $playground->appendTo($categories2);
+    $playground->appendTo($dayOfCity);
 */
 
 /*
-    $roots = Category::find()->roots()->all();
-    var_dump($roots);
+    $election = Category::findOne(['name' => 'выборы']);
 
-    $leaves = Category::find()->leaves()->all();
-    var_dump($leaves);
+    $president = new Category(['name' => 'президенсткие']);
+    $president->appendTo($election);
+
+    $local = new Category(['name' => 'муниципальные']);
+    $local->appendTo($election);
 */
 
+    $categories = [];
 
-    $categories = Category::findOne(['name' => 'фейерверки']);
-    $parent = $categories->parents(1)->one();
-    var_dump($parent);
+    $roots = Category::find()->roots()->all();
+    // var_dump($roots);
+    foreach ($roots as $category) {
+      $categories[] = $category;
+    }
 
+    $leaves = Category::find()->leaves()->all();
+    // var_dump($leaves);
+    foreach ($leaves as $leaf) {
+      $categories[] = $leaf;
+    }
+
+    Yii::$app->response->format = Response::FORMAT_JSON;
+    return $categories;
   }
 
-  public function actionGetNews() {
+  public function actionGetNews($category_id) {
     $articles = [];
 
     // echo 'Все новости указанной рубрики:<br/><br/>';
-    $cat = Category::findOne(1);
+    $cat = Category::findOne($category_id);
     $articles[] = $cat->list;
 
     // echo '<br/>Новости вложенных рубрик:<br/>';
@@ -57,8 +70,9 @@ class TestController extends Controller {
 
     foreach ($leaves as $child) {
       $catIn = Category::findOne($child->id);
-      $articles[] = $catIn->list;
-      // var_dump($catIn->list);
+      if (count($catIn->list) > 0) {
+        $articles[] = $catIn->list;
+      }
     }
 
     Yii::$app->response->format = Response::FORMAT_JSON;
